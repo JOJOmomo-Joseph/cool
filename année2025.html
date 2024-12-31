@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonne Année 2025</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #000428, #004e92);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            animation: glow 2s infinite alternate;
+            color: #ff9800;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            margin-top: 20px;
+        }
+
+        form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 1rem;
+        }
+
+        form button {
+            background: #ff9800;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        form button:hover {
+            background: #f57c00;
+        }
+
+        #confirmationMessage {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #4caf50;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: none;
+        }
+
+        #confirmationMessage.visible {
+            display: block;
+        }
+
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #fff, 0 0 20px #ff9800, 0 0 30px #ff5722;
+            }
+            to {
+                text-shadow: 0 0 20px #fff, 0 0 30px #ff9800, 0 0 40px #ff5722;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="fireworksCanvas"></canvas>
+    <div class="message-banner"></div>
+    <div class="container">
+        <header class="header">
+            <h1 id="animatedText">Bonne et Heureuse Année 2025 🎉</h1>
+            <p>Que cette nouvelle année vous apporte motivation ,Santé • Bonheur • Joie • Succès!</p>
+        </header>
+        <div class="slider">
+            <div class="slide">"Croyez en vos rêves et travaillez dur pour les réaliser."</div>
+            <div class="slide">"Chaque jour est une nouvelle chance de briller."</div>
+            <div class="slide">"La réussite commence par une simple décision : ne jamais abandonner."</div>
+        </div>
+        <section class="form-section">
+            <h2> Quelles sont Vos objectifs pour 2025</h2>
+            <form id="goalsForm" onsubmit="handleSubmit(event)">
+                <textarea id="goalsInput" placeholder="Partagez vos objectifs ici..." rows="5" required></textarea>
+                <button type="submit">Envoyer</button>
+            </form>
+            <div id="confirmationMessage">
+                🎉 Merci d'avoir partagé vos objectifs ! Vos rêves sont à portée de main, et 2025 sera une année pleine de réussite pour vous ! 🌟
+            </div>
+        </section>
+        <footer class="footer">
+            <p>&copy; 2025 Créé par NAKORE Joseph</p>
+        </footer>
+    </div>  
+    <script>
+        // Fireworks display
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Firework {
+            constructor(x, y, color, angle, speed, maxLife) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.angle = angle;
+                this.speed = speed;
+                this.life = maxLife;
+                this.maxLife = maxLife;
+                this.opacity = 1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            update() {
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                this.life--;
+                this.opacity = this.life / this.maxLife;
+            }
+        }
+
+        const colors = ["#FF5733", "#33FF57", "#3357FF", "#FFFF33", "#FF33FF", "#FFFFFF"];
+        let fireworks = [];
+
+        function spawnFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height / 2;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const particles = 50; // Number of particles per firework
+            const speed = Math.random() * 2 + 2;
+
+            for (let i = 0; i < particles; i++) {
+                const angle = (Math.PI * 2 / particles) * i;
+                fireworks.push(new Firework(x, y, color, angle, speed, 100));
+            }
+        }
+
+        function animateFireworks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            fireworks.forEach((firework, index) => {
+                if (firework.life <= 0) {
+                    fireworks.splice(index, 1);
+                } else {
+                    firework.update();
+                    firework.draw();
+                }
+            });
+
+            requestAnimationFrame(animateFireworks);
+        }
+
+        setInterval(spawnFirework, 500);
+        animateFireworks();
+
+        // Animated text colors
+        const animatedText = document.getElementById("animatedText");
+        let colorIndex = 0;
+
+        setInterval(() => {
+            animatedText.style.color = colors[colorIndex];
+            colorIndex = (colorIndex + 1) % colors.length;
+        }, 500);
+
+        // Form handling
+        function handleSubmit(event) {
+            event.preventDefault();
+            const confirmationMessage = document.getElementById('confirmationMessage');
+            confirmationMessage.classList.add('visible');
+        }
+    </script>
+</body>
+</html>
